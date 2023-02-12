@@ -14,6 +14,10 @@ import java.security.InvalidParameterException;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
+    /**
+     * 파라미터 검증 오류
+     * @return ResponseEntity<CommonFailResponse>
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CommonFailResponse> invalidParam() {
 
@@ -25,6 +29,10 @@ public class ExceptionAdvice {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 아이디 중복 오류
+     * @return ResponseEntity<CommonFailResponse>
+     */
     @ExceptionHandler(InvalidParameterException.class)
     public ResponseEntity<CommonFailResponse> duplicateId() {
 

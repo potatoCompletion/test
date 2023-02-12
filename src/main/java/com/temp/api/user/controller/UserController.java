@@ -22,20 +22,18 @@ public class UserController {
     /**
      * 회원가입 API
      * @param joinParam
-     * @return
+     * @return ResponseEntity
      */
     @PostMapping("/join")
     public ResponseEntity<CommonSuccessResponse> join(@Valid @RequestBody JoinParam joinParam) {
-        var savedUserId = userService.join(joinParam);
+        var savedUser = userService.join(joinParam);
 
         CommonSuccessResponse response = CommonSuccessResponse.builder()
                 .status(HttpStatus.OK)
                 .message(ResponseMessage.SUCCESS)
-                .data(savedUserId)
+                .data(savedUser)
                 .build();
 
         return ResponseEntity.ok(response);
     }
-
-
 }

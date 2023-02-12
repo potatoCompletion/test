@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserDetails createUserDetails(UserInfoEntity user) {
         return User.builder()
                 .username(user.getUserId())
-                .password(passwordEncoder.encode(user.getPassword()))
+                .password(user.getPassword())
                 .roles(user.getRole().toString())
                 .build();
     }
