@@ -1,6 +1,6 @@
 package com.temp.api.user.domain;
 
-import com.temp.api.common.Roles;
+import com.temp.api.common.enums.Roles;
 import com.temp.api.common.domain.BaseTimeEntity;
 import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.*;
@@ -8,10 +8,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -22,7 +20,6 @@ public class UserInfoEntity extends BaseTimeEntity {
     // fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Column(name = "user_id", nullable = false)
@@ -45,7 +42,7 @@ public class UserInfoEntity extends BaseTimeEntity {
     @Builder
     public UserInfoEntity(String userId, String password, String name, Roles role) {
 
-        validate();
+        validate(userId, password, name);
 
         this.userId = userId;
         this.password = password;
@@ -53,11 +50,11 @@ public class UserInfoEntity extends BaseTimeEntity {
         this.role = role;
     }
 
-    private void validate() {
+    private void validate(String userId, String password, String name) {
         // 안전한 객체 생성을 위한 검증 (빈 값이 들어올 시 에러내기 위해서)
         Assert.hasText(userId, "userId must not be empty!");
         Assert.hasText(password, "userPassword must not be empty!");
-        Assert.hasText(password, "userName must not be empty!");
+        Assert.hasText(name, "name must not be empty!");
     }
 
 }

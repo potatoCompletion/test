@@ -1,6 +1,6 @@
 package com.temp.api.user.dto;
 
-import com.temp.api.common.Roles;
+import com.temp.api.common.enums.Roles;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -9,13 +9,13 @@ import lombok.*;
 @Data
 @Setter(AccessLevel.NONE)
 @AllArgsConstructor
-public class UserParam {
+public class JoinParam {
     @NotBlank(message = "id를 입력해주세요.")
     @Size(max = 20, message = "id는 20자 이내로 설정해주세요.")
     private String userId;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Size(min = 12, message = "비밀번호는 12자 이상으로 설정해주세요.")
+    @Size(min = 12, max = 30, message = "비밀번호는 12자 이상 30자 이하로 설정해주세요.")
     @Pattern(regexp = "(?=.{12,})(" +
             "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])|" +
             "(?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W_])|" +
@@ -27,6 +27,6 @@ public class UserParam {
     @NotBlank(message = "이름을 입력해주세요.")
     @Size(max = 10, message = "이름을 확인해주세요. (10자 초과)")
     private String userName;
-    private Roles role;
+    private Roles role; // Enum 사용으로 별도의 검증 X
 
 }

@@ -1,6 +1,6 @@
 package com.temp.api.user.domain;
 
-import com.temp.api.common.Roles;
+import com.temp.api.common.enums.Roles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
