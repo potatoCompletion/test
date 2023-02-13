@@ -26,14 +26,13 @@ public class OrderEntity extends BaseTimeEntity {
     @Column(name = "request_user_code", nullable = false)
     private Long requestUserCode;
 
-    @Column(name = "request_user_name", nullable = false, length = 60)
+    @Column(name = "request_user_name", nullable = false)
     private String requestUserName;
 
     @Column(name = "to_address", nullable = false)
     private String toAddress;
 
     @Column(name = "rider_user_code")
-    @Enumerated(EnumType.STRING)
     private Long riderUserCode;
 
     @Column(name = "is_updatable", nullable = false)

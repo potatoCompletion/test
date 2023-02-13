@@ -2,6 +2,7 @@ package com.temp.api.user.controller;
 
 import com.temp.api.common.dto.CommonSuccessResponse;
 import com.temp.api.common.enums.ResponseMessage;
+import com.temp.api.user.domain.OrderEntity;
 import com.temp.api.user.domain.UserInfoEntity;
 import com.temp.api.user.dto.JoinParam;
 import com.temp.api.user.service.UserService;
@@ -9,10 +10,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -42,12 +44,14 @@ public class UserController {
      * 배달조회 API
      * @return ResponseEntity
      */
-    @PostMapping("/order-list")
-    public ResponseEntity<CommonSuccessResponse> selectOrderList() {
+    @GetMapping("/order-list")
+    public ResponseEntity<CommonSuccessResponse> selectOrderList(Principal principal) {
+        List<OrderEntity> orderList = userService.selectOrderList(principal.getName()).orElseThrow();
 
         CommonSuccessResponse response = CommonSuccessResponse.builder()
                 .status(HttpStatus.OK)
                 .message(ResponseMessage.SUCCESS)
+                .data(orderList)
                 .build();
 
         return ResponseEntity.ok(response);

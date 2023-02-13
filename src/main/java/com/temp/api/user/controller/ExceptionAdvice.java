@@ -1,16 +1,14 @@
 package com.temp.api.user.controller;
 
+import com.sun.jdi.request.DuplicateRequestException;
 import com.temp.api.common.dto.CommonFailResponse;
-import com.temp.api.common.dto.CommonSuccessResponse;
-import com.temp.api.common.enums.ResponseMessage;
-import com.temp.api.user.exception.UserException;
-import org.springframework.http.HttpStatus;
+import com.temp.api.common.exception.ErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.security.InvalidParameterException;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
@@ -19,11 +17,11 @@ public class ExceptionAdvice {
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<CommonFailResponse> invalidParam() {
+    protected ResponseEntity<CommonFailResponse> invalidParam() {
 
         CommonFailResponse response = CommonFailResponse.builder()
-                .code(UserException.INVALID_PARAM.getCode())
-                .message(UserException.INVALID_PARAM.getMessage())
+                .code(ErrorCode.INVALID_PARAM.getCode())
+                .message(ErrorCode.INVALID_PARAM.getMessage())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -33,12 +31,27 @@ public class ExceptionAdvice {
      * 아이디 중복 오류
      * @return ResponseEntity<CommonFailResponse>
      */
-    @ExceptionHandler(InvalidParameterException.class)
-    public ResponseEntity<CommonFailResponse> duplicateId() {
+    @ExceptionHandler(DuplicateRequestException.class)
+    protected ResponseEntity<CommonFailResponse> duplicateId() {
 
         CommonFailResponse response = CommonFailResponse.builder()
-                .code(UserException.DUPLICATE_USERID.getCode())
-                .message(UserException.DUPLICATE_USERID.getMessage())
+                .code(ErrorCode.DUPLICATE_USERID.getCode())
+                .message(ErrorCode.DUPLICATE_USERID.getMessage())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 데이터 미존재 에러
+     * @return ResponseEntity<CommonFailResponse>
+     */
+    @ExceptionHandler(NoSuchElementException.class)
+    protected ResponseEntity<CommonFailResponse> dataNotFound() {
+
+        CommonFailResponse response = CommonFailResponse.builder()
+                .code(ErrorCode.DATA_NOT_FOUND.getCode())
+                .message(ErrorCode.DATA_NOT_FOUND.getMessage())
                 .build();
 
         return ResponseEntity.ok(response);

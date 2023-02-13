@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserInfoEntity, Long> {
+public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long> {
     UserInfoEntity save(UserInfoEntity userInfo);
     boolean existsByUserId(String userId);  // 아이디 중복체크
-    Optional<UserInfoEntity> findById(String userId);
+    Optional<UserInfoEntity> findByUserCode(String userId);
     Optional<UserInfoEntity> findByUserId(String userId);
+    Optional<UserInfoEntity> findByName(String name);
 }
