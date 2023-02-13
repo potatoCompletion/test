@@ -20,7 +20,8 @@ public class UserInfoEntity extends BaseTimeEntity {
     // fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_code")
+    private Long userCode;
 
     @Column(name = "user_id", nullable = false)
     private String userId;
@@ -42,7 +43,7 @@ public class UserInfoEntity extends BaseTimeEntity {
     @Builder
     public UserInfoEntity(String userId, String password, String name, Roles role) {
 
-        validate(userId, password, name);
+        validate(userId, password, name, role);
 
         this.userId = userId;
         this.password = password;
@@ -50,11 +51,16 @@ public class UserInfoEntity extends BaseTimeEntity {
         this.role = role;
     }
 
-    private void validate(String userId, String password, String name) {
+    public void setLastLogin(LocalDateTime nowDateTime) {
+        this.lastLogin = nowDateTime;
+    }
+
+    private void validate(String userId, String password, String name, Roles role) {
         // 안전한 객체 생성을 위한 검증 (빈 값이 들어올 시 에러내기 위해서)
         Assert.hasText(userId, "userId must not be empty!");
         Assert.hasText(password, "userPassword must not be empty!");
         Assert.hasText(name, "name must not be empty!");
+        Assert.notNull(role, "role must not be null!");
     }
 
 }

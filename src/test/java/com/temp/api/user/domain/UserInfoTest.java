@@ -7,33 +7,44 @@ import org.junit.jupiter.api.Test;
 public class UserInfoTest {
 
     @Test
-    public void null객체생성테스트() {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            UserInfoEntity userInfoEntity = new UserInfoEntity();
-        });
-    }
-
-    @Test
-    public void empty객체생성테스트() {
+    public void 이상객체생성테스트() {
 
         Assertions.assertThrows(RuntimeException.class, () -> UserInfoEntity.builder()
                 .userId("")
-                .userPassword("")
-                .userName("")
+                .password("qqqqqqqqqqqQQQQQ!!!!!!!!!!!")
+                .name("하지원")
                 .role(Roles.USER)
+                .build());
+
+        Assertions.assertThrows(RuntimeException.class, () -> UserInfoEntity.builder()
+                .userId("test2")
+                .password("")
+                .name("하지원")
+                .role(Roles.USER)
+                .build());
+
+        Assertions.assertThrows(RuntimeException.class, () -> UserInfoEntity.builder()
+                .userId("test3")
+                .password("qqqqqqqqqqqQQQQQ!!!!!!!!!!!")
+                .name("")
+                .role(Roles.USER)
+                .build());
+
+        Assertions.assertThrows(RuntimeException.class, () -> UserInfoEntity.builder()
+                .userId("test3")
+                .password("qqqqqqqqqqqQQQQQ!!!!!!!!!!!")
+                .name("하지원")
                 .build());
     }
 
     @Test
     public void 정상객체생성테스트() {
 
-        Assertions.assertThrows(RuntimeException.class, () -> UserInfoEntity.builder()
+        Assertions.assertDoesNotThrow(() -> UserInfoEntity.builder()
                 .userId("testId")
-                .userPassword("testPassword")
-                .userName("하지원")
+                .password("testPassword")
+                .name("하지원")
                 .role(Roles.USER)
                 .build());
-
-//        Assertions.assertEquals();
     }
 }

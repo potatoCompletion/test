@@ -1,5 +1,6 @@
 package com.temp.api.user.service;
 
+import com.temp.api.common.security.PasswordEncoder;
 import com.temp.api.user.domain.UserInfoEntity;
 import com.temp.api.user.dto.JoinParam;
 import com.temp.api.user.repository.UserRepository;
@@ -9,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.InvalidParameterException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -32,5 +35,14 @@ public class UserService {
                 .build();
 
         return userRepository.save(newUser);
+    }
+
+    public void updateLastLogin(String userId) {
+        UserInfoEntity user = userRepository.findByUserId(userId)
+                .orElseThrow();
+
+        user.setLastLogin(LocalDateTime.now());
+
+        userRepository.save(user);
     }
 }

@@ -2,6 +2,7 @@ package com.temp.api.user.controller;
 
 import com.temp.api.common.dto.CommonSuccessResponse;
 import com.temp.api.common.enums.ResponseMessage;
+import com.temp.api.user.domain.UserInfoEntity;
 import com.temp.api.user.dto.JoinParam;
 import com.temp.api.user.service.UserService;
 import jakarta.validation.Valid;
@@ -26,12 +27,27 @@ public class UserController {
      */
     @PostMapping("/join")
     public ResponseEntity<CommonSuccessResponse> join(@Valid @RequestBody JoinParam joinParam) {
-        var savedUser = userService.join(joinParam);
+        UserInfoEntity savedUser = userService.join(joinParam);
 
         CommonSuccessResponse response = CommonSuccessResponse.builder()
                 .status(HttpStatus.OK)
                 .message(ResponseMessage.SUCCESS)
                 .data(savedUser)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 배달조회 API
+     * @return ResponseEntity
+     */
+    @PostMapping("/order-list")
+    public ResponseEntity<CommonSuccessResponse> selectOrderList() {
+
+        CommonSuccessResponse response = CommonSuccessResponse.builder()
+                .status(HttpStatus.OK)
+                .message(ResponseMessage.SUCCESS)
                 .build();
 
         return ResponseEntity.ok(response);

@@ -23,8 +23,9 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final Key key;
-    private final String secretKey = "hellostrangermynameiskingsuandimthebestintheworldwhoeveryouare";  // HS256 알고리즘 쓰려면 256비트 보다 커야됨
-    private long tokenValidTime = 30 * 60 * 1000L;  // 유효기간 30분
+    private final String secretKey = "EykEsretciSsEcRetkEyandnomeaningjustforaddbit";  // HS256 알고리즘 쓰려면 256비트 보다 커야됨
+    private long accessTokenValidTime = 30 * 60 * 1000L;  // 유효기간 30분
+    private long refreshTokenValidTime = 1440 * 60 * 1000L;  // 유효기간 1일
 
     public JwtTokenProvider() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -49,13 +50,13 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
-                .setExpiration(new Date(now + tokenValidTime))
+                .setExpiration(new Date(now + accessTokenValidTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         // Refresh Token 생성 (HS256 해싱)
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + tokenValidTime))
+                .setExpiration(new Date(now + refreshTokenValidTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
