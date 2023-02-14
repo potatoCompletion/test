@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long> {
     UserInfoEntity save(UserInfoEntity userInfo);
     boolean existsByUserId(String userId);  // 아이디 중복체크
-    Optional<UserInfoEntity> findByUserCode(String userId);
+    Optional<UserInfoEntity> findByUserCode(Long userCode);
     Optional<UserInfoEntity> findByUserId(String userId);
     Optional<UserInfoEntity> findByName(String name);
 }

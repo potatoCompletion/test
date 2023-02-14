@@ -5,11 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 @Data
 @Setter(AccessLevel.NONE)
 @AllArgsConstructor
-public class OrderListParam {
-    private LocalDate period;
+public class OrderParam {
+    private String destination;
 }

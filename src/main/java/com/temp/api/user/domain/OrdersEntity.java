@@ -1,6 +1,5 @@
 package com.temp.api.user.domain;
 
-import com.temp.api.common.enums.Roles;
 import com.temp.api.common.domain.BaseTimeEntity;
 import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.*;
@@ -14,8 +13,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="ORDER")
-public class OrderEntity extends BaseTimeEntity {
+@Table(name="ORDERS")
+public class OrdersEntity extends BaseTimeEntity {
 
     // fields
     @Id
@@ -26,44 +25,47 @@ public class OrderEntity extends BaseTimeEntity {
     @Column(name = "request_user_code", nullable = false)
     private Long requestUserCode;
 
-    @Column(name = "request_user_name", nullable = false)
-    private String requestUserName;
-
     @Column(name = "to_address", nullable = false)
     private String toAddress;
 
     @Column(name = "rider_user_code")
     private Long riderUserCode;
 
-    @Column(name = "is_updatable", nullable = false)
+    @Column(name = "is_updatable", nullable = false, columnDefinition = "TINYINT(1)", length = 1)
     private boolean isUpdatable;
+
+    @Column(name = "is_completion", nullable = false, columnDefinition = "TINYINT(1)", length = 1)
+    private boolean isCompletion;
+
+    @Column(name = "completion_date")
+    private LocalDateTime completionDate;
 
     // constructor
     @Builder
-    public OrderEntity(Long requestUserCode, String requestUserName, String toAddress, Boolean isUpdatable) {
+    public OrdersEntity(Long requestUserCode, String toAddress) {
 
-        validate(requestUserCode, requestUserName, toAddress, isUpdatable);
+        validate(requestUserCode, toAddress);
 
         this.requestUserCode = requestUserCode;
-        this.requestUserName = requestUserName;
         this.toAddress = toAddress;
-        this.isUpdatable = isUpdatable;
+        this.isUpdatable = true;    // default
+        this.isCompletion = false;  // default
     }
 
-    public void setRiderUserCode(Long riderUserCode) {
+    public void changeToAddress(String toAddress) { this.toAddress = toAddress; }
+    public void changeRiderUserCode(Long riderUserCode) {
         this.riderUserCode = riderUserCode;
     }
 
-    public void setIsUpdatable(Boolean isUpdatable) {
+    public void changeIsUpdatable(Boolean isUpdatable) {
         this.isUpdatable = isUpdatable;
     }
+    public void changeIsCompletion(Boolean isCompletion) { this.isCompletion = isCompletion; }
 
-    private void validate(Long requestUserCode, String requestUserName, String toAddress, Boolean isUpdatable) {
+    private void validate(Long requestUserCode, String toAddress) {
         // 안전한 객체 생성을 위한 검증 (빈 값이 들어올 시 에러내기 위해서)
         Assert.notNull(requestUserCode, "userId must not be null!");
-        Assert.hasText(requestUserName, "userPassword must not be empty!");
         Assert.hasText(toAddress, "name must not be empty!");
-        Assert.notNull(isUpdatable, "role must not be null!");
     }
 
 }

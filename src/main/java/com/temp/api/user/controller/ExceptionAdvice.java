@@ -3,6 +3,7 @@ package com.temp.api.user.controller;
 import com.sun.jdi.request.DuplicateRequestException;
 import com.temp.api.common.dto.CommonFailResponse;
 import com.temp.api.common.exception.ErrorCode;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,7 +44,7 @@ public class ExceptionAdvice {
     }
 
     /**
-     * 데이터 미존재 에러
+     * 데이터 미존재 오류
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(NoSuchElementException.class)
@@ -52,6 +53,21 @@ public class ExceptionAdvice {
         CommonFailResponse response = CommonFailResponse.builder()
                 .code(ErrorCode.DATA_NOT_FOUND.getCode())
                 .message(ErrorCode.DATA_NOT_FOUND.getMessage())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * DB 접근 중 오류
+     * @return
+     */
+    @ExceptionHandler(DataAccessException.class)
+    protected ResponseEntity<CommonFailResponse> dataAccessError() {
+
+        CommonFailResponse response = CommonFailResponse.builder()
+                .code(ErrorCode.DATA_ACCESS_ERROR.getCode())
+                .message(ErrorCode.DATA_ACCESS_ERROR.getMessage())
                 .build();
 
         return ResponseEntity.ok(response);

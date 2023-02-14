@@ -1,8 +1,14 @@
 package com.temp.api.common.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.temp.api.common.dto.CommonFailResponse;
+import com.temp.api.common.exception.ErrorCode;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -12,6 +18,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+
+import javax.management.relation.RoleInfoNotFoundException;
 import java.io.IOException;
 
 @Component
@@ -19,6 +27,8 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
@@ -30,7 +40,18 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         // 2. validateToken 으로 토큰 유효성 검사
         if (token != null && jwtTokenProvider.validateToken(token)) {
             // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext에 저장
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            Authentication authentication = null;
+            try {
+                authentication = getAuthentication(token);
+            } catch (RuntimeException e) {
+                // 토큰 비정상 에러 핸들링
+                CommonFailResponse failResponse = CommonFailResponse.builder()
+                        .code(ErrorCode.TOKEN_ERROR.getCode())
+                        .message(ErrorCode.TOKEN_ERROR.getMessage())
+                        .build();
+                var writer = response.getWriter();
+                writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(failResponse));
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
@@ -45,4 +66,16 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }
         return null;
     }
+
+    public Authentication getAuthentication(String accessToken) {
+        // 토큰 복호화
+        Claims claims = jwtTokenProvider.parseClaims(accessToken);
+
+        // 토큰 정상여부 권한으로 체크
+        if (claims.get("auth") == null) throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
+        return new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
+    }
+
 }
