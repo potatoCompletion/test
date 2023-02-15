@@ -1,7 +1,7 @@
-# test
+# 바로고 과제
 회원가입, 로그인, 내역조회, 주문수정 API 입니다.
 
-<실행환경>  
+<실행환경>
 jdk: java 17 (Amazon Coretto Version 17.0)  
 gradle JVM: java 17(Amazon Coretto)  
 Server port: 8080  

@@ -1,13 +1,11 @@
 package com.temp.api.user.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @Setter(AccessLevel.NONE)
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrderParam {
     private String toAddress;
 }

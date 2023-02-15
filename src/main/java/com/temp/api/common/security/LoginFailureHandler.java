@@ -20,8 +20,12 @@ import java.io.PrintWriter;
 @Component
 public class LoginFailureHandler implements AuthenticationFailureHandler {
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * 로그인 실패 핸들링 메서드
+     * @throws IOException
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,

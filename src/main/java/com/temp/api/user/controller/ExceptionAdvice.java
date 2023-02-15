@@ -4,6 +4,7 @@ import com.sun.jdi.request.DuplicateRequestException;
 import com.temp.api.common.dto.CommonResponse;
 import com.temp.api.common.enums.ResponseMessage;
 import com.temp.api.common.exception.ErrorCode;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,6 +87,19 @@ public class ExceptionAdvice {
                 .message(ResponseMessage.FAIL)
                 .errorCode(ErrorCode.DATA_ACCESS_ERROR.getCode())
                 .errorMessage(ErrorCode.DATA_ACCESS_ERROR.getMessage())
+                .build();
+
+        return ResponseEntity.ok(failResponse);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<CommonResponse> invalidQueryString() {
+
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.INVALID_PARAM.getCode())
+                .errorMessage(ErrorCode.INVALID_PARAM.getMessage())
                 .build();
 
         return ResponseEntity.ok(failResponse);

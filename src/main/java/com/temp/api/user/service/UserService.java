@@ -120,7 +120,7 @@ public class UserService {
         HashMap<String, LocalDateTime> dateTimeHashMap = autoSetDateTime(orderListDto.getPeriod());
 
         if (orderListDto.getRole().equals(Roles.RIDER)) {   // user.role 이 rider 일 경우
-            return orderRepository.findAllByRiderUserCodeAndCreatedDateBetween(orderListDto.getUserCode(),
+            return orderRepository.findAllByRiderUserCodeAndCreatedDateBetweenOrderByCreatedDate(orderListDto.getUserCode(),
                     dateTimeHashMap.get(START_DATE),
                     dateTimeHashMap.get(END_DATE))
                     .orElseThrow(() -> {
@@ -128,7 +128,7 @@ public class UserService {
                     });
         }
 
-        return orderRepository.findAllByRequestUserCodeAndCreatedDateBetween(orderListDto.getUserCode(),
+        return orderRepository.findAllByRequestUserCodeAndCreatedDateBetweenOrderByCreatedDate(orderListDto.getUserCode(),
                 dateTimeHashMap.get(START_DATE),
                 dateTimeHashMap.get(END_DATE))
                 .orElseThrow(() -> {

@@ -11,10 +11,11 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<OrdersEntity, Long> {
     OrdersEntity save(OrdersEntity order);
-    Optional<List<OrdersEntity>> findAllByRequestUserCodeAndCreatedDateBetween(Long requestUserCode,
+    Optional<List<OrdersEntity>> findAllByRequestUserCodeAndCreatedDateBetweenOrderByCreatedDate(
+                                                                                Long requestUserCode,
                                                                                 LocalDateTime startDate,
                                                                                 LocalDateTime endDate);
-    Optional<List<OrdersEntity>> findAllByRiderUserCodeAndCreatedDateBetween(Long riderUserCode,
+    Optional<List<OrdersEntity>> findAllByRiderUserCodeAndCreatedDateBetweenOrderByCreatedDate(Long riderUserCode,
                                                                                 LocalDateTime startDate,
                                                                                 LocalDateTime endDate);
 
