@@ -42,20 +42,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         // 2. validateToken 으로 토큰 유효성 검사
         if (token != null && jwtTokenProvider.validateToken(token)) {
             // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext에 저장
-            Authentication authentication = null;
-            try {
-                authentication = getAuthentication(token);
-            } catch (RuntimeException e) {
-                // 토큰 비정상 에러 핸들링
-                CommonResponse failResponse = CommonResponse.builder()
-                        .status(HttpStatus.BAD_REQUEST)
-                        .message(ResponseMessage.FAIL)
-                        .errorCode(ErrorCode.TOKEN_ERROR.getCode())
-                        .errorMessage(ErrorCode.TOKEN_ERROR.getMessage())
-                        .build();
-                var writer = response.getWriter();
-                writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(failResponse));
-            }
+            Authentication authentication = getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
@@ -75,7 +62,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         // 토큰 복호화
         Claims claims = jwtTokenProvider.parseClaims(accessToken);
 
-        // 토큰 정상여부 권한으로 체크
+        // 토큰 권한정보 체크
         if (claims.get("auth") == null) throw new SecurityException("권한 정보가 없는 토큰입니다.");
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
