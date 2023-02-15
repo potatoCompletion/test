@@ -5,6 +5,7 @@ import com.temp.api.common.dto.CommonResponse;
 import com.temp.api.common.enums.ResponseMessage;
 import com.temp.api.common.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,7 +76,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         Claims claims = jwtTokenProvider.parseClaims(accessToken);
 
         // 토큰 정상여부 권한으로 체크
-        if (claims.get("auth") == null) throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+        if (claims.get("auth") == null) throw new SecurityException("권한 정보가 없는 토큰입니다.");
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());

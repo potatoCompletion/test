@@ -1,6 +1,7 @@
 package com.temp.api;
 
 import com.temp.api.common.security.JwtAuthenticationFilter;
+import com.temp.api.common.security.JwtExceptionFilter;
 import com.temp.api.common.security.LoginFailureHandler;
 import com.temp.api.common.security.LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
-    private final UserDetailsService userDetailsService;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,7 +47,8 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")  // 로그인 프로세스 url (직접 구현 x, 내부 생성)
                 .permitAll()
                     .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  // securityContext 이용하기 위함. 없을 시 토큰 발급 기록불가
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);  // securityContext 이용하기 위함. 없을 시 토큰 발급 기록불가
 
         return http.build();
     }

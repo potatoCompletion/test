@@ -3,6 +3,7 @@ package com.temp.api.common.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,17 +80,19 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException ex) {
+            log.info("잘못된 JWT 토큰입니다.", ex);
+            throw new SecurityException("잘못된 JWT 토큰입니다.");
+        } catch (ExpiredJwtException ex) {
+            log.info("만료된 JWT 토큰입니다. (토큰 재발급 로직 미완성)", ex);
+            throw new SecurityException("만료된 JWT 토큰입니다. (토큰 재발급 로직 미완성)");
+        } catch (UnsupportedJwtException ex) {
+            log.info("지원되지 않는 JWT 토큰입니다.", ex);
+            throw new SecurityException("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException ex) {
+            log.info("JWT claims이 비어있습니다.", ex);
+            throw new SecurityException("JWT claims이 비어있습니다.");
         }
-
-        return false;
     }
 
     public Claims parseClaims(String accessToken) {

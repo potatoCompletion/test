@@ -4,6 +4,7 @@ import com.sun.jdi.request.DuplicateRequestException;
 import com.temp.api.common.dto.CommonResponse;
 import com.temp.api.common.enums.ResponseMessage;
 import com.temp.api.common.exception.ErrorCode;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -93,13 +94,32 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<CommonResponse> invalidQueryString() {
+    protected ResponseEntity<CommonResponse> invalidQueryString(Exception ex) {
+
+        // exception message가 비어있을 경우 default 메세지 설정
+        String exceptionMessage = ex.getMessage();
+        if (exceptionMessage.isBlank()) {
+            exceptionMessage = ErrorCode.INVALID_PARAM.getMessage();
+        }
 
         CommonResponse failResponse = CommonResponse.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .message(ResponseMessage.FAIL)
                 .errorCode(ErrorCode.INVALID_PARAM.getCode())
-                .errorMessage(ErrorCode.INVALID_PARAM.getMessage())
+                .errorMessage(exceptionMessage)
+                .build();
+
+        return ResponseEntity.ok(failResponse);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    protected ResponseEntity<CommonResponse> invalidToken(Exception ex) {
+
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.NO_CONTENT)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.DATA_ACCESS_ERROR.getCode())
+                .errorMessage(ErrorCode.DATA_ACCESS_ERROR.getMessage())
                 .build();
 
         return ResponseEntity.ok(failResponse);
