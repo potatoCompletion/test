@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -18,11 +20,18 @@ public class ExceptionAdvice {
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<CommonFailResponse> invalidParam() {
+    protected ResponseEntity<CommonFailResponse> invalidParam(MethodArgumentNotValidException ex) {
+        var detailMessageArgs = ex.getDetailMessageArguments();
+        var paramErrorMessage = Arrays.stream(detailMessageArgs).toList().get(1).toString();
+
+        // 에러메세지 파싱 결과 비어있을 경우 기본메세지 설정
+        if(paramErrorMessage.isBlank()) {
+            paramErrorMessage = ErrorCode.INVALID_PARAM.getMessage();
+        }
 
         CommonFailResponse response = CommonFailResponse.builder()
                 .code(ErrorCode.INVALID_PARAM.getCode())
-                .message(ErrorCode.INVALID_PARAM.getMessage())
+                .message(paramErrorMessage)
                 .build();
 
         return ResponseEntity.ok(response);

@@ -47,7 +47,7 @@ public class UserController {
     }
 
     /**
-     * 배달주문 API (단순 가데이터 입력용)
+     * 배달주문 API (단순 가데이터 입력용, insert)
      * @param request
      * @return ResponseEntity
      */
@@ -91,6 +91,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 주문내역 수정 API (update)
+     * @param request
+     * @param orderCode
+     * @param currentUser
+     * @return ResponseEntity
+     */
     @PostMapping("/order/{orderCode}")
     public ResponseEntity<CommonSuccessResponse> order(@RequestBody Map<String, String> request,
                                                        @PathVariable Long orderCode,

@@ -53,13 +53,18 @@ public class OrdersEntity extends BaseTimeEntity {
     }
 
     public void changeToAddress(String toAddress) { this.toAddress = toAddress; }
+
+    // 라이더가 주문을 받았을 때 업데이트 용도
     public void changeRiderUserCode(Long riderUserCode) {
         this.riderUserCode = riderUserCode;
     }
 
+    // 배달이 시작됐을 때 (라이더가 배달품목을 픽업 했을 때) 업데이트 용도
     public void changeIsUpdatable(Boolean isUpdatable) {
         this.isUpdatable = isUpdatable;
     }
+
+    // 배달이 완료 되었을 때 업데이트 용도
     public void changeIsCompletion(Boolean isCompletion) { this.isCompletion = isCompletion; }
 
     private void validate(Long requestUserCode, String toAddress) {

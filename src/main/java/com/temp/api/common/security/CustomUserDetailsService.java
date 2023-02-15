@@ -25,22 +25,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        UserInfoEntity user = userInfoRepository.findByUserId(userId)
-                .orElseThrow(() -> {
-                    throw new UsernameNotFoundException("유저를 찾을 수 없습니다.");
-                });
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
 
-        return new CustomUser(user, authorities);
-
-
-//        return userInfoRepository.findByUserId(userId)
-//                .map(this::createCustomUser)
-//                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
+        return userInfoRepository.findByUserId(userId)
+                .map(this::createCustomUser)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
     }
 
-    //해당하는 User의  데이터가 존재한다면 CustomUser 객체로 만들어서 리턴
+    // CustomUser 객체 리턴
     private CustomUser createCustomUser(UserInfoEntity user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));

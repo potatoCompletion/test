@@ -116,7 +116,8 @@ public class UserService {
      * @return Optional<List<OrderEntity>>
      */
     public List<OrdersEntity> selectOrderList(OrderListDto orderListDto) {
-        HashMap<String, LocalDateTime> dateTimeHashMap = autoSetDateTime(orderListDto);
+        // 입력받은 날짜 기반으로 조회일자 설정
+        HashMap<String, LocalDateTime> dateTimeHashMap = autoSetDateTime(orderListDto.getPeriod());
 
         if (orderListDto.getRole().equals(Roles.RIDER)) {   // user.role 이 rider 일 경우
             return orderRepository.findAllByRiderUserCodeAndCreatedDateBetween(orderListDto.getUserCode(),
@@ -140,11 +141,11 @@ public class UserService {
      * @param orderListDto
      * @return HashMap<String, LocalDateTime>
      */
-    private HashMap<String, LocalDateTime> autoSetDateTime(OrderListDto orderListDto) {
+    private HashMap<String, LocalDateTime> autoSetDateTime(int period) {
         HashMap<String, LocalDateTime> dateTimeHashMap = new HashMap<>();
 
         dateTimeHashMap.put(START_DATE_KEY,
-                LocalDateTime.of(LocalDate.now().minusDays(orderListDto.getPeriod()), LocalTime.of(0, 0, 0)));
+                LocalDateTime.of(LocalDate.now().minusDays(period), LocalTime.of(0, 0, 0)));
         dateTimeHashMap.put(END_DATE_KEY,
                 LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)));
 
