@@ -1,8 +1,10 @@
 package com.temp.api.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.temp.api.common.dto.CommonFailResponse;
+import com.temp.api.common.dto.CommonResponse;
+import com.temp.api.common.enums.ResponseMessage;
 import com.temp.api.common.exception.ErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,10 +27,11 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
 
-
-        CommonFailResponse failResponse = CommonFailResponse.builder()
-                .code(ErrorCode.LOGIN_FAILED.getCode())
-                .message(getExceptionMessage(exception))
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.LOGIN_FAILED.getCode())
+                .errorMessage(getExceptionMessage(exception))
                 .build();
 
         // json 으로 에러 반환

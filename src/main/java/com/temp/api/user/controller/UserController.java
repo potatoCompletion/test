@@ -1,13 +1,13 @@
 package com.temp.api.user.controller;
 
 import com.temp.api.common.Annotation.CurrentUser;
-import com.temp.api.common.dto.CommonSuccessResponse;
+import com.temp.api.common.dto.CommonResponse;
 import com.temp.api.common.enums.ResponseMessage;
-import com.temp.api.common.security.CustomUser;
 import com.temp.api.user.domain.OrdersEntity;
 import com.temp.api.user.domain.UserInfoEntity;
 import com.temp.api.user.dto.JoinParam;
 import com.temp.api.user.dto.OrderListDto;
+import com.temp.api.user.dto.OrderParam;
 import com.temp.api.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -34,13 +34,12 @@ public class UserController {
      * @return ResponseEntity
      */
     @PostMapping("/join")
-    public ResponseEntity<CommonSuccessResponse> join(@Valid @RequestBody JoinParam joinParam) {
-        UserInfoEntity savedUser = userService.join(joinParam);
+    public ResponseEntity<CommonResponse> join(@Valid @RequestBody JoinParam joinParam) {
+        userService.join(joinParam);
 
-        CommonSuccessResponse response = CommonSuccessResponse.builder()
+        CommonResponse response = CommonResponse.builder()
                 .status(HttpStatus.OK)
                 .message(ResponseMessage.SUCCESS)
-                .data(savedUser)
                 .build();
 
         return ResponseEntity.ok(response);
@@ -52,11 +51,11 @@ public class UserController {
      * @return ResponseEntity
      */
     @PostMapping("/order")
-    public ResponseEntity<CommonSuccessResponse> order(@RequestBody Map<String, String> request,
-                                                       @CurrentUser UserInfoEntity currentUser) {
-        OrdersEntity savedOrder = userService.orderInsert(currentUser.getUserCode(), request.get("toAddress"));
+    public ResponseEntity<CommonResponse> insertOrder(@RequestBody Map<String, String> request,
+                                                      @CurrentUser UserInfoEntity currentUser) {
+        OrdersEntity savedOrder = userService.insertOrder(currentUser.getUserCode(), request.get("toAddress"));
 
-        CommonSuccessResponse response = CommonSuccessResponse.builder()
+        CommonResponse response = CommonResponse.builder()
                 .status(HttpStatus.OK)
                 .message(ResponseMessage.SUCCESS)
                 .data(savedOrder)
@@ -71,8 +70,9 @@ public class UserController {
      * @return ResponseEntity
      */
     @GetMapping("/order-list")
-    public ResponseEntity<CommonSuccessResponse> selectOrderList(@RequestParam @Min(1) @Max(3) Integer period,
-                                                                    @CurrentUser UserInfoEntity currentUser) {
+    public ResponseEntity<CommonResponse> selectOrderList(@RequestParam(value = "period") @Min(0) @Max(3) Integer period,
+                                                          @CurrentUser UserInfoEntity currentUser) {
+
         // service layer 로 전달할 dto 생성
         OrderListDto orderListDto = OrderListDto.builder()
                 .userCode(currentUser.getUserCode())
@@ -82,7 +82,7 @@ public class UserController {
 
         List<OrdersEntity> orderList = userService.selectOrderList(orderListDto);
 
-        CommonSuccessResponse response = CommonSuccessResponse.builder()
+        CommonResponse response = CommonResponse.builder()
                 .status(HttpStatus.OK)
                 .message(ResponseMessage.SUCCESS)
                 .data(orderList)
@@ -94,17 +94,15 @@ public class UserController {
     /**
      * 주문내역 수정 API (update)
      * @param request
-     * @param orderCode
-     * @param currentUser
      * @return ResponseEntity
      */
     @PostMapping("/order/{orderCode}")
-    public ResponseEntity<CommonSuccessResponse> order(@RequestBody Map<String, String> request,
-                                                       @PathVariable Long orderCode,
-                                                       @CurrentUser UserInfoEntity currentUser) {
-        OrdersEntity savedOrder = userService.orderUpdate(orderCode, currentUser.getUserCode(), request.get("toAddress"));
+    public ResponseEntity<CommonResponse> updateOrder(@RequestBody OrderParam request,
+                                                      @PathVariable Long orderCode,
+                                                      @CurrentUser UserInfoEntity currentUser) {
+        OrdersEntity savedOrder = userService.updateOrder(orderCode, currentUser.getUserCode(), request);
 
-        CommonSuccessResponse response = CommonSuccessResponse.builder()
+        CommonResponse response = CommonResponse.builder()
                 .status(HttpStatus.OK)
                 .message(ResponseMessage.SUCCESS)
                 .data(savedOrder)

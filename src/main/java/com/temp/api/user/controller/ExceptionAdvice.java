@@ -1,15 +1,16 @@
 package com.temp.api.user.controller;
 
 import com.sun.jdi.request.DuplicateRequestException;
-import com.temp.api.common.dto.CommonFailResponse;
+import com.temp.api.common.dto.CommonResponse;
+import com.temp.api.common.enums.ResponseMessage;
 import com.temp.api.common.exception.ErrorCode;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
@@ -20,7 +21,7 @@ public class ExceptionAdvice {
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<CommonFailResponse> invalidParam(MethodArgumentNotValidException ex) {
+    protected ResponseEntity<CommonResponse> invalidParam(MethodArgumentNotValidException ex) {
         var detailMessageArgs = ex.getDetailMessageArguments();
         var paramErrorMessage = Arrays.stream(detailMessageArgs).toList().get(1).toString();
 
@@ -29,12 +30,14 @@ public class ExceptionAdvice {
             paramErrorMessage = ErrorCode.INVALID_PARAM.getMessage();
         }
 
-        CommonFailResponse response = CommonFailResponse.builder()
-                .code(ErrorCode.INVALID_PARAM.getCode())
-                .message(paramErrorMessage)
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.INVALID_PARAM.getCode())
+                .errorMessage(paramErrorMessage)
                 .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(failResponse);
     }
 
     /**
@@ -42,14 +45,16 @@ public class ExceptionAdvice {
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(DuplicateRequestException.class)
-    protected ResponseEntity<CommonFailResponse> duplicateId() {
+    protected ResponseEntity<CommonResponse> duplicateId() {
 
-        CommonFailResponse response = CommonFailResponse.builder()
-                .code(ErrorCode.DUPLICATE_USERID.getCode())
-                .message(ErrorCode.DUPLICATE_USERID.getMessage())
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.DUPLICATE_USERID.getCode())
+                .errorMessage(ErrorCode.DUPLICATE_USERID.getMessage())
                 .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(failResponse);
     }
 
     /**
@@ -57,14 +62,16 @@ public class ExceptionAdvice {
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(NoSuchElementException.class)
-    protected ResponseEntity<CommonFailResponse> dataNotFound() {
+    protected ResponseEntity<CommonResponse> dataNotFound() {
 
-        CommonFailResponse response = CommonFailResponse.builder()
-                .code(ErrorCode.DATA_NOT_FOUND.getCode())
-                .message(ErrorCode.DATA_NOT_FOUND.getMessage())
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.NO_CONTENT)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.DATA_NOT_FOUND.getCode())
+                .errorMessage(ErrorCode.DATA_NOT_FOUND.getMessage())
                 .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(failResponse);
     }
 
     /**
@@ -72,13 +79,15 @@ public class ExceptionAdvice {
      * @return
      */
     @ExceptionHandler(DataAccessException.class)
-    protected ResponseEntity<CommonFailResponse> dataAccessError() {
+    protected ResponseEntity<CommonResponse> dataAccessError() {
 
-        CommonFailResponse response = CommonFailResponse.builder()
-                .code(ErrorCode.DATA_ACCESS_ERROR.getCode())
-                .message(ErrorCode.DATA_ACCESS_ERROR.getMessage())
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.NO_CONTENT)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.DATA_ACCESS_ERROR.getCode())
+                .errorMessage(ErrorCode.DATA_ACCESS_ERROR.getMessage())
                 .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(failResponse);
     }
 }

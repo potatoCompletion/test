@@ -1,10 +1,12 @@
 package com.temp.api.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.temp.api.common.dto.CommonFailResponse;
+import com.temp.api.common.dto.CommonResponse;
+import com.temp.api.common.enums.ResponseMessage;
 import com.temp.api.common.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +21,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
-import javax.management.relation.RoleInfoNotFoundException;
 import java.io.IOException;
 
 @Component
@@ -45,9 +46,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 authentication = getAuthentication(token);
             } catch (RuntimeException e) {
                 // 토큰 비정상 에러 핸들링
-                CommonFailResponse failResponse = CommonFailResponse.builder()
-                        .code(ErrorCode.TOKEN_ERROR.getCode())
-                        .message(ErrorCode.TOKEN_ERROR.getMessage())
+                CommonResponse failResponse = CommonResponse.builder()
+                        .status(HttpStatus.BAD_REQUEST)
+                        .message(ResponseMessage.FAIL)
+                        .errorCode(ErrorCode.TOKEN_ERROR.getCode())
+                        .errorMessage(ErrorCode.TOKEN_ERROR.getMessage())
                         .build();
                 var writer = response.getWriter();
                 writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(failResponse));

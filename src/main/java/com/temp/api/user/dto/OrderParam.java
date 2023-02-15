@@ -9,5 +9,5 @@ import lombok.Setter;
 @Setter(AccessLevel.NONE)
 @AllArgsConstructor
 public class OrderParam {
-    private String destination;
+    private String toAddress;
 }

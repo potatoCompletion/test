@@ -6,11 +6,11 @@ import com.temp.api.user.domain.OrdersEntity;
 import com.temp.api.user.domain.UserInfoEntity;
 import com.temp.api.user.dto.JoinParam;
 import com.temp.api.user.dto.OrderListDto;
+import com.temp.api.user.dto.OrderParam;
 import com.temp.api.user.repository.OrderRepository;
 import com.temp.api.user.repository.UserInfoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +29,8 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserInfoRepository userInfoRepository;
     private final OrderRepository orderRepository;
-    private static final String START_DATE_KEY = "startDate";
-    private static final String END_DATE_KEY = "endDate";
+    private static final String START_DATE = "startDate";
+    private static final String END_DATE = "endDate";
 
     /**
      * 유저 회원가입(저장)
@@ -76,7 +76,7 @@ public class UserService {
      * @param toAddress
      * @return OrderEntity
      */
-    public OrdersEntity orderInsert(Long userCode, String toAddress) {
+    public OrdersEntity insertOrder(Long userCode, String toAddress) {
 
         OrdersEntity order = OrdersEntity.builder()
                 .requestUserCode(userCode)
@@ -94,7 +94,7 @@ public class UserService {
      * @param toAddress
      * @return OrderEntity
      */
-    public OrdersEntity orderUpdate(Long orderCode, Long userCode, String toAddress) {
+    public OrdersEntity updateOrder(Long orderCode, Long userCode, OrderParam orderParam) {
 
         OrdersEntity order = orderRepository.findByOrderCode(orderCode)
                 .orElseThrow();
@@ -104,7 +104,7 @@ public class UserService {
             throw new InvalidParameterException();  // TODO: 예외 처리
         }
 
-        order.changeToAddress(toAddress);
+        order.changeToAddress(orderParam.getToAddress());
 
         return order;
     }
@@ -121,16 +121,16 @@ public class UserService {
 
         if (orderListDto.getRole().equals(Roles.RIDER)) {   // user.role 이 rider 일 경우
             return orderRepository.findAllByRiderUserCodeAndCreatedDateBetween(orderListDto.getUserCode(),
-                    dateTimeHashMap.get(START_DATE_KEY),
-                    dateTimeHashMap.get(END_DATE_KEY))
+                    dateTimeHashMap.get(START_DATE),
+                    dateTimeHashMap.get(END_DATE))
                     .orElseThrow(() -> {
                         throw new NoSuchElementException();
                     });
         }
 
         return orderRepository.findAllByRequestUserCodeAndCreatedDateBetween(orderListDto.getUserCode(),
-                dateTimeHashMap.get(START_DATE_KEY),
-                dateTimeHashMap.get(END_DATE_KEY))
+                dateTimeHashMap.get(START_DATE),
+                dateTimeHashMap.get(END_DATE))
                 .orElseThrow(() -> {
                     throw new NoSuchElementException();
                 });
@@ -144,9 +144,9 @@ public class UserService {
     private HashMap<String, LocalDateTime> autoSetDateTime(int period) {
         HashMap<String, LocalDateTime> dateTimeHashMap = new HashMap<>();
 
-        dateTimeHashMap.put(START_DATE_KEY,
+        dateTimeHashMap.put(START_DATE,
                 LocalDateTime.of(LocalDate.now().minusDays(period), LocalTime.of(0, 0, 0)));
-        dateTimeHashMap.put(END_DATE_KEY,
+        dateTimeHashMap.put(END_DATE,
                 LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)));
 
         return dateTimeHashMap;

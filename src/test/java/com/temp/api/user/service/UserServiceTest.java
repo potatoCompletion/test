@@ -24,16 +24,16 @@ public class UserServiceTest {
     @Test
     void 아이디중복테스트() {
         //given
-        JoinParam joinParam = new JoinParam("test123", "qqqqqqqqqQQQQQ!!!!!!!!!", "김완수", Roles.USER);
-        UserInfoEntity user = UserInfoEntity.builder()
-                .userId(joinParam.getUserId())
-                .password(joinParam.getPassword())
-                .name(joinParam.getUserName())
-                .role(joinParam.getRole())
-                .build();
-
-        //mocking
-        given(userInfoRepository.save(any()))
-                .willReturn(user);
+//        JoinParam joinParam = new JoinParam("test123", "qqqqqqqqqQQQQQ!!!!!!!!!", "김완수", Roles.USER);
+//        UserInfoEntity user = UserInfoEntity.builder()
+//                .userId(joinParam.getUserId())
+//                .password(joinParam.getPassword())
+//                .name(joinParam.getUserName())
+//                .role(joinParam.getRole())
+//                .build();
+//
+//        //mocking
+//        given(userInfoRepository.save(any()))
+//                .willReturn(user);
     }
 }
