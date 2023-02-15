@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TokenInfo {
 
     private String grantType;

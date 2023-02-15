@@ -50,7 +50,7 @@ public class JwtTokenProvider {
 
         long now = (new Date()).getTime();
 
-        // Access Token 생성
+        // Access Token 생성 (HS256 해싱)
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -58,16 +58,17 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
+        // Redis 미완성으로 인한 refreshToken 생성 로직 삭제
+
         // Refresh Token 생성 (HS256 해싱)
-        String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + refreshTokenValidTime))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+//        String refreshToken = Jwts.builder()
+//                .setExpiration(new Date(now + refreshTokenValidTime))
+//                .signWith(key, SignatureAlgorithm.HS256)
+//                .compact();
 
         return TokenInfo.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
