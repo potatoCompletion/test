@@ -111,17 +111,4 @@ public class ExceptionAdvice {
 
         return ResponseEntity.ok(failResponse);
     }
-
-    @ExceptionHandler(SignatureException.class)
-    protected ResponseEntity<CommonResponse> invalidToken(Exception ex) {
-
-        CommonResponse failResponse = CommonResponse.builder()
-                .status(HttpStatus.NO_CONTENT)
-                .message(ResponseMessage.FAIL)
-                .errorCode(ErrorCode.DATA_ACCESS_ERROR.getCode())
-                .errorMessage(ErrorCode.DATA_ACCESS_ERROR.getMessage())
-                .build();
-
-        return ResponseEntity.ok(failResponse);
-    }
 }
