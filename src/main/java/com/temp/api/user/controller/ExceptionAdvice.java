@@ -7,6 +7,7 @@ import com.temp.api.common.exception.ErrorCode;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,18 +26,14 @@ public class ExceptionAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<CommonResponse> invalidParam(MethodArgumentNotValidException ex) {
         var detailMessageArgs = ex.getDetailMessageArguments();
-        var paramErrorMessage = Arrays.stream(detailMessageArgs).toList().get(1).toString();
-
-        // 에러메세지 파싱 결과 비어있을 경우 기본메세지 설정
-        if(paramErrorMessage.isBlank()) {
-            paramErrorMessage = ErrorCode.INVALID_PARAM.getMessage();
-        }
+        var parsedMessage = Arrays.stream(detailMessageArgs).toList().get(1).toString();
+        String exceptionMessage = getExceptionMessage(parsedMessage, ErrorCode.INVALID_PARAM.getMessage());
 
         CommonResponse failResponse = CommonResponse.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .message(ResponseMessage.FAIL)
                 .errorCode(ErrorCode.INVALID_PARAM.getCode())
-                .errorMessage(paramErrorMessage)
+                .errorMessage(exceptionMessage)
                 .build();
 
         return ResponseEntity.ok(failResponse);
@@ -47,13 +44,14 @@ public class ExceptionAdvice {
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(DuplicateRequestException.class)
-    protected ResponseEntity<CommonResponse> duplicateId() {
+    protected ResponseEntity<CommonResponse> duplicateId(Exception ex) {
+        String exceptionMessage = getExceptionMessage(ex.getMessage(), ErrorCode.DUPLICATE_USERID.getMessage());
 
         CommonResponse failResponse = CommonResponse.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .message(ResponseMessage.FAIL)
                 .errorCode(ErrorCode.DUPLICATE_USERID.getCode())
-                .errorMessage(ErrorCode.DUPLICATE_USERID.getMessage())
+                .errorMessage(exceptionMessage)
                 .build();
 
         return ResponseEntity.ok(failResponse);
@@ -64,13 +62,14 @@ public class ExceptionAdvice {
      * @return ResponseEntity<CommonFailResponse>
      */
     @ExceptionHandler(NoSuchElementException.class)
-    protected ResponseEntity<CommonResponse> dataNotFound() {
+    protected ResponseEntity<CommonResponse> dataNotFound(Exception ex) {
+        String exceptionMessage = getExceptionMessage(ex.getMessage(), ErrorCode.DATA_NOT_FOUND.getMessage());
 
         CommonResponse failResponse = CommonResponse.builder()
                 .status(HttpStatus.NO_CONTENT)
                 .message(ResponseMessage.FAIL)
                 .errorCode(ErrorCode.DATA_NOT_FOUND.getCode())
-                .errorMessage(ErrorCode.DATA_NOT_FOUND.getMessage())
+                .errorMessage(exceptionMessage)
                 .build();
 
         return ResponseEntity.ok(failResponse);
@@ -81,13 +80,14 @@ public class ExceptionAdvice {
      * @return
      */
     @ExceptionHandler(DataAccessException.class)
-    protected ResponseEntity<CommonResponse> dataAccessError() {
+    protected ResponseEntity<CommonResponse> dataAccessError(Exception ex) {
+        String exceptionMessage = getExceptionMessage(ex.getMessage(), ErrorCode.DATA_ACCESS_ERROR.getMessage());
 
         CommonResponse failResponse = CommonResponse.builder()
                 .status(HttpStatus.NO_CONTENT)
                 .message(ResponseMessage.FAIL)
                 .errorCode(ErrorCode.DATA_ACCESS_ERROR.getCode())
-                .errorMessage(ErrorCode.DATA_ACCESS_ERROR.getMessage())
+                .errorMessage(exceptionMessage)
                 .build();
 
         return ResponseEntity.ok(failResponse);
@@ -100,12 +100,7 @@ public class ExceptionAdvice {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<CommonResponse> invalidQueryString(Exception ex) {
-
-        // exception message가 비어있을 경우 default 메세지 설정
-        String exceptionMessage = ex.getMessage();
-        if (exceptionMessage.isBlank()) {
-            exceptionMessage = ErrorCode.INVALID_PARAM.getMessage();
-        }
+        String exceptionMessage = getExceptionMessage(ex.getMessage(), ErrorCode.INVALID_PARAM.getMessage());
 
         CommonResponse failResponse = CommonResponse.builder()
                 .status(HttpStatus.BAD_REQUEST)
@@ -115,5 +110,25 @@ public class ExceptionAdvice {
                 .build();
 
         return ResponseEntity.ok(failResponse);
+    }
+
+    @ExceptionHandler(IncorrectUpdateSemanticsDataAccessException.class)
+    protected ResponseEntity<CommonResponse> cannotUpdate(Exception ex) {
+
+        String exceptionMessage = getExceptionMessage(ex.getMessage(), ErrorCode.DATA_CANNOT_UPDATE.getMessage());
+
+        CommonResponse failResponse = CommonResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(ResponseMessage.FAIL)
+                .errorCode(ErrorCode.DATA_ACCESS_ERROR.getCode())
+                .errorMessage(exceptionMessage)
+                .build();
+
+        return ResponseEntity.ok(failResponse);
+    }
+
+    private String getExceptionMessage(String exceptionMessage, String defaultMessage) {
+        // 에러메세지 파싱 결과 비어있을 경우 기본메세지 설정
+        return exceptionMessage.isBlank() ? defaultMessage : exceptionMessage;
     }
 }

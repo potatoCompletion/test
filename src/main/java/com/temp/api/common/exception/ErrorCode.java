@@ -17,6 +17,7 @@ public enum ErrorCode {
     // 데이터 에러
     DATA_NOT_FOUND("2000", "데이터가 존재하지 않습니다."),
     DATA_ACCESS_ERROR("2001", "DB 접근 중 에러가 발생했습니다."),
+    DATA_CANNOT_UPDATE("2002", "업데이트에 실패했습니다."),
 
     // 로그인 에러
     LOGIN_FAILED("3000", "로그인 정보가 유효하지 않습니다."),

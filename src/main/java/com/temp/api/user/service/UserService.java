@@ -11,6 +11,7 @@ import com.temp.api.user.repository.OrderRepository;
 import com.temp.api.user.repository.UserInfoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -98,8 +99,8 @@ public class UserService {
                 .orElseThrow();
 
         // 해당 주문이 요청유저의 것이 맞는지 검증 && 업데이트 가능여부 체크
-        if (!order.getRequestUserCode().equals(userCode) && order.isUpdatable()) {
-            throw new InvalidParameterException();  // TODO: 예외 처리
+        if (!order.getRequestUserCode().equals(userCode) || !order.isUpdatable()) {
+            throw new IncorrectUpdateSemanticsDataAccessException("업데이트가 불가능한 내역입니다.");
         }
 
         order.changeToAddress(orderParam.getToAddress());
