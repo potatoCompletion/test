@@ -93,6 +93,11 @@ public class ExceptionAdvice {
         return ResponseEntity.ok(failResponse);
     }
 
+    /**
+     * GET Query String으로 전달받은 파라미터 오류
+     * @param ex
+     * @return ResponseEntity
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<CommonResponse> invalidQueryString(Exception ex) {
 
