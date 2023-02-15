@@ -64,9 +64,7 @@ public class UserService {
         UserInfoEntity user = userInfoRepository.findByUserId(userId)
                 .orElseThrow();
 
-        user.setLastLogin(LocalDateTime.now());
-
-        userInfoRepository.save(user);
+        user.changeLastLogin(LocalDateTime.now());
     }
 
     /**
@@ -91,7 +89,7 @@ public class UserService {
      *
      * @param orderCode
      * @param userCode
-     * @param toAddress
+     * @param orderParam
      * @return OrderEntity
      */
     public OrdersEntity updateOrder(Long orderCode, Long userCode, OrderParam orderParam) {
@@ -99,8 +97,8 @@ public class UserService {
         OrdersEntity order = orderRepository.findByOrderCode(orderCode)
                 .orElseThrow();
 
-        // 해당 주문이 요청유저의 것이 맞는지 검증
-        if (!order.getRequestUserCode().equals(userCode)) {
+        // 해당 주문이 요청유저의 것이 맞는지 검증 && 업데이트 가능여부 체크
+        if (!order.getRequestUserCode().equals(userCode) && order.isUpdatable()) {
             throw new InvalidParameterException();  // TODO: 예외 처리
         }
 
@@ -138,7 +136,7 @@ public class UserService {
 
     /**
      * 오늘 날짜로 부터 {입력받은 날짜} 전까지의 기간을 설정해주는 메서드
-     * @param orderListDto
+     * @param period
      * @return HashMap<String, LocalDateTime>
      */
     private HashMap<String, LocalDateTime> autoSetDateTime(int period) {

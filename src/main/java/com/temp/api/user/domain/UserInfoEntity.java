@@ -51,7 +51,7 @@ public class UserInfoEntity extends BaseTimeEntity {
         this.role = role;
     }
 
-    public void setLastLogin(LocalDateTime nowDateTime) {
+    public void changeLastLogin(LocalDateTime nowDateTime) {
         this.lastLogin = nowDateTime;
     }
 
