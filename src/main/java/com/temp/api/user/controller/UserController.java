@@ -69,7 +69,7 @@ public class UserController {
      * @param period
      * @return ResponseEntity
      */
-    @GetMapping("/order-list")
+    @GetMapping("/orders")
     public ResponseEntity<CommonResponse> selectOrderList(@RequestParam(value = "period") @Min(0) @Max(3) Integer period,
                                                           @CurrentUser UserInfoEntity currentUser) {
 
