@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws

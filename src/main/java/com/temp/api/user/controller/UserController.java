@@ -28,12 +28,7 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
-    /**
-     * 회원가입 API
-     * @param joinParam
-     * @return ResponseEntity
-     */
-    @PostMapping("/join")
+    @PostMapping("")
     public ResponseEntity<CommonResponse> join(@Valid @RequestBody JoinParam joinParam) {
         userService.join(joinParam);
 
@@ -46,11 +41,28 @@ public class UserController {
     }
 
     /**
+     * 회원가입 API
+     * @param joinParam
+     * @return ResponseEntity
+     */
+//    @PostMapping("/join")
+//    public ResponseEntity<CommonResponse> join(@Valid @RequestBody JoinParam joinParam) {
+//        userService.join(joinParam);
+//
+//        CommonResponse response = CommonResponse.builder()
+//                .status(HttpStatus.OK)
+//                .message(ResponseMessage.SUCCESS)
+//                .build();
+//
+//        return ResponseEntity.ok(response);
+//    }
+
+    /**
      * 배달주문 API (단순 가데이터 입력용, insert)
      * @param request
      * @return ResponseEntity
      */
-    @PostMapping("/order")
+    @PostMapping("/orders")
     public ResponseEntity<CommonResponse> insertOrder(@RequestBody Map<String, String> request,
                                                       @CurrentUser UserInfoEntity currentUser) {
         OrdersEntity savedOrder = userService.insertOrder(currentUser.getUserCode(), request.get("toAddress"));
@@ -96,7 +108,7 @@ public class UserController {
      * @param request
      * @return ResponseEntity
      */
-    @PostMapping("/order/{orderCode}")
+    @PostMapping("/orders/{orderCode}")
     public ResponseEntity<CommonResponse> updateOrder(@RequestBody OrderParam request,
                                                       @PathVariable Long orderCode,
                                                       @CurrentUser UserInfoEntity currentUser) {

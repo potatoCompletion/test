@@ -21,7 +21,6 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserInfoRepository userInfoRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
